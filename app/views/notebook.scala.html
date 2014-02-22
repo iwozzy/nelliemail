@@ -1,0 +1,68 @@
+@(notebooks: List[String])
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+<script type='text/javascript' src="@routes.Assets.at("images/MetroJs.ltt.js")"></script>
+
+<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("images/MetroJs.ltt.css")">
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css">
+
+<div class="pure-menu pure-menu-open pure-menu-horizontal">
+    <a href="" class="pure-menu-heading">ReSurface</a>
+
+    <ul>
+        <li class="pure-menu-selected"><a href="/">Home</a></li>
+        @if(session.get("token") == null) { 
+            <li><a href="/auth">Connect to Evernote</a></li>
+            <img src="@routes.Assets.at("images/evernote.png")" style="width:15px; height:15px" />
+        } else {
+            <li><a href="/notes">Notes</a></li>
+            <li><a href="/notebooks">Notebooks</a></li>
+            <li><a href="/sharedNotebooks">Shared Notebooks</a></li>
+        }
+            <li><a href="/logout">Log Out</a></li>
+    </ul>
+</div>
+
+<div class="tiles blue tile-group four-wide">
+            <!-- Sliding Tile that shows 100% of the back tile every 3 seconds -->
+            <div class="live-tile" data-speed="750" data-delay="5000">
+                <span class="tile-title">Note from last year!</span>
+                <div><img class="full" src="@routes.Assets.at("images/1tw.gif")" alt="1" /></div>
+                <div><img class="full" src="@routes.Assets.at("images/2t.gif")" alt="2" /></div>
+            </div>
+            
+             <!-- Green Static Tile -->
+            <div class="live-tile accent green exclude">
+                <span class="tile-title">Remember?</span>
+                <p>You filed this but never looked at it again!</p>
+            </div>
+            
+            
+             <!-- Red Flip Tile that flips every 4 seconds -->
+            <div class="red live-tile" data-mode="flip" data-delay="6000">            
+                <div>
+                    <img class="full" src="@routes.Assets.at("images/3tw.gif")" alt="3" />
+                    <span class="tile-title">Last week's discussion</span>
+                </div>
+                <div>
+                    <img class="full" src="@routes.Assets.at("images/4tw.gif")" alt="4" />
+                    <span class="tile-title">Forgotten note</span>
+                </div>
+            </div>  
+            
+           
+        </div>
+        
+         <script type="text/javascript">
+            // apply regular slide universally unless .exclude class is applied 
+            // NOTE: The default options for each liveTile are being pulled from the 'data-' attributes
+            $(".live-tile, .flip-list").not(".exclude").liveTile();
+        </script>
+
+<ul>
+@for(notebook <- notebooks) {
+    <li>@notebook</li>
+}
+</ul>

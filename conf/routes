@@ -1,0 +1,32 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET     /                           controllers.Application.index()
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /webjars/*file              controllers.WebJarAssets.at(file)
+
+GET     /auth                       controllers.Evernote.auth()
+GET     /auth2                      controllers.Evernote.auth2()
+
+GET     /login                      controllers.Application.login()
+POST    /login                      controllers.Application.authenticate()
+
+GET     /signup                     controllers.Shits.signup()
+POST    /signup                     controllers.Shits.newSignUp()
+
+GET     /logout                     controllers.Application.logOut()
+
+GET     /notebooks                  controllers.Evernote.getNotebooks()
+GET     /sharedNotebooks            controllers.Evernote.getSharedNotebooks()
+GET     /notes                      controllers.Evernote.getAllNotes()
+
+GET     /googleauth                 controllers.Google.auth()
+GET     /googleauth2                controllers.Google.auth2(code)
+
+GET     /emails                     controllers.Email.getFolders()
+GET     /sayHello                   controllers.Email.sayHello()
+GET     /cover                      controllers.Email.getCover()
+GET     /outbox                     controllers.Email.getOutbox()

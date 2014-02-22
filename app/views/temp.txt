@@ -1,0 +1,60 @@
+    <div class="pure-menu pure-menu-open pure-menu-horizontal">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <a id="titleLink" class="brand" href="/">@title</a>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        @content
+    </div>
+    
+    ----------------------------------
+    
+    @(message: String)
+
+@main("Welcome to ReSurface") {
+
+    <div class="well">
+        <h1>@message @session.get("email")</h1>
+        <h2>Authentication</h2>
+        <a href="/auth">Click here</a> to connect to Evernote
+    </div>
+
+}
+
+
+@(title: String)(content: Html)(form: Form[Application.Login])
+
+
+
+@main("Welcome to ReSurface")
+
+
+
+
+
+
+ @helper.form(routes.Shits.newSignUp) {
+    
+        <h1>Sign up</h1>
+        
+        @if(form.hasGlobalErrors) {
+            <p class="error">
+                @form.globalError.message
+            </p>
+        }
+        
+        <p>
+            <input type="text" id="fullName" name="fullName" placeholder="Full Name">
+        </p>
+        <p>
+            <input type="email" id="email" name="email" placeholder="Email" value="@form("email").value">
+        </p>
+        <p>
+           <input type="password" id="password" name="password" placeholder="Password">
+        </p>
+        <p>
+            <button type="submit">Sign up</button>
+        </p>
+    }

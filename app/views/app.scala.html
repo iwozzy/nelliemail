@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <title>ReSurface</title>
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css">
+    </head>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+    <script>
+        function loadCover() {
+            $('#cover').load('/cover');
+        }
+
+        function loadFollowUp() {
+            $('#cover').load('/outbox');
+        }
+    </script>
+
+    <script src="http://use.typekit.net/gis6vng.js"></script>
+    <script>
+        try { Typekit.load(); } catch (e) {}
+    </script>
+
+    <div class="pure-menu pure-menu-open pure-menu-horizontal">
+    <a href="#" class="pure-menu-heading">ReSurface</a>
+
+    <ul>
+        <li class="pure-menu-selected"><a href="/">Home</a></li>
+        @if(session.get("refresh_token") == null ) {
+            <li><a href="/googleauth">Connect to Google</a></li>
+        }
+        @if(session.get("token") == null) { 
+            <li><a href="/auth">Connect to Evernote</a></li>
+            <img src="@routes.Assets.at("images/evernote.png")" style="width:15px; height:15px" />
+        } else {
+            <li><a href="/notes">Notes</a></li>
+            <li><a href="/notebooks">Notebooks</a></li>
+            <li><a href="/sharedNotebooks">Shared Notebooks</a></li>
+        }
+            <li><a href="/logout">Log Out</a></li>
+    </ul>
+</div>
+
+    <body>
+        Hi @session.get("email");
+
+        <button onclick="loadCover()">Load Emails</button>
+        <button onclick="loadFollowUp()">What do I need to follow up on?</button>
+
+        <div id="cover" style="padding-left: 20%"></div>
+        
+    </body>
+   
+</html>

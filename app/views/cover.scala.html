@@ -1,0 +1,14 @@
+@(coverEmails: ArrayList[javax.mail.Message])
+
+@for(coverEmail <- coverEmails) {
+        <div id="coverEmail" style="width: 200px;height: 200px; margin: 5px; background-color: mediumpurple; float: left">
+            <p style="font-family: proxmia-nova,sans-serif; font-size: small">@coverEmail.getFrom()</p>
+            <p style="font-family: proxmia-nova,sans-serif; font-size: small; position: relative;">@coverEmail.getReceivedDate().toLocaleString()</p>
+            <p style="font-family: proxima-nova, sans-serif; padding: 10%"><b>@if(coverEmail.getSubject().length() > 50) {
+                @coverEmail.getSubject().substring(0,50) ...
+            } else {
+                @coverEmail.getSubject()
+            }
+            </b></p>
+        </div>
+        }

@@ -1,0 +1,30 @@
+@(notes: List[String])
+
+<script type='text/javascript' src='@routes.Assets.at("javascripts/masonry.pkgd.min.js")'></script>
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css">
+
+<div class="pure-menu pure-menu-open pure-menu-horizontal">
+    <a href="" class="pure-menu-heading">ReSurface</a>
+
+    <ul>
+        <li class="pure-menu-selected"><a href="/">Home</a></li>
+        @if(session.get("token") == null) { 
+            <li><a href="/auth">Connect to Evernote</a></li>
+            <img src="@routes.Assets.at("images/evernote.png")" style="width:15px; height:15px" />
+        } else {
+            <li><a href="/notes">Notes</a></li>
+            <li><a href="/notebooks">Notebooks</a></li>
+            <li><a href="/sharedNotebooks">Shared Notebooks</a></li>
+        }
+            <li><a href="/logout">Log Out</a></li>
+    </ul>
+</div>
+
+<div id="container" class="js-masonry" data-masonry-options='{ "columnWidth": 200, "itemSelector": ".item" }'>
+    @for(note <- notes) {
+        <div class="item">
+        <button class="pure-button pure-button-primary">@note</button>
+        <img src="http://speckycdn.sdm.netdna-cdn.com/wp-content/uploads/2013/05/21-flat-note-app-icons-ideas-ios_compressed.jpg" style="width:25%; height:25%; float: left"/>
+        </div>
+    }
+</div>
