@@ -27,12 +27,16 @@ import views.html.*;
  */
 public class Email extends Controller {
 
-    public static Result getFolders() {
+    /*
+        Returns the Gmail inbox folder for the currently logged in user
+     */
+
+    public static Folder getInbox() {
         OAuth2Authenticator.initialize();
 
-            User currentUser = User.isNewUser(session("email"));
+        User currentUser = User.isNewUser(session("email"));
 
-            try {
+        try {
             IMAPStore imapSslStore = OAuth2Authenticator.connectToImap("imap.gmail.com", 993, currentUser.email, currentUser.googleToken, true);
             Folder inbox = imapSslStore.getFolder("inbox");
             inbox.open(Folder.READ_ONLY);
@@ -40,21 +44,18 @@ public class Email extends Controller {
             System.out.println("---------------------" + inbox.getMessageCount() + "-----------------------");
             System.out.println("---------------------" + inbox.getMessage(1368).isSet(FLAGS.Flag.SEEN) + "-----------------------");
 
+            return inbox;
         } catch (Exception e) {
             System.out.println(e);
         }
 
-        return ok();
+        return null;
     }
 
-    @BodyParser.Of(BodyParser.Json.class)
-    public static Result sayHello() {
-        JsonNode json = request().body().asJson();
-        ObjectNode result = Json.newObject();
-        result.put("status", "KO");
-        result.put("message", "Missing parameter [name]");
-        return ok(result);
-    }
+
+    /*
+        TODO Need to return actual JSON vs ArrayLit
+     */
 
     @BodyParser.Of(BodyParser.Json.class)
     public static Result getCover() {
@@ -64,9 +65,9 @@ public class Email extends Controller {
 
         ArrayList<Message> coverEmails = new ArrayList<Message>();
 
+        Folder inbox = getInbox();
+
         try {
-            IMAPStore imapSslStore = OAuth2Authenticator.connectToImap("imap.gmail.com",993,currentUser.email,currentUser.googleToken,true);
-            Folder inbox = imapSslStore.getFolder("inbox");
             inbox.open(Folder.READ_ONLY);
             int messageCount = inbox.getMessageCount();
 
@@ -195,4 +196,23 @@ public class Email extends Controller {
         return ok(cover.render(followUp));
     }
 
+    /*
+        Example of a nested json
+     */
+
+    @BodyParser.Of(BodyParser.Json.class)
+    public static Result sayHello() {
+        JsonNode json = request().body().asJson();
+
+        ObjectNode result = Json.newObject();
+        ObjectNode inside = Json.newObject();
+
+        inside.put("inside","insideValue");
+
+        result.put("status", "KO");
+        result.put("message", "Missing parameter [name]");
+        result.put("nested",inside);
+
+        return ok(result);
+    }
 }
