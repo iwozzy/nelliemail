@@ -35,7 +35,7 @@ public class Shits extends Controller {
         
         public String validate() {
             
-            System.out.println("First: " + email);
+            System.out.println("First One: " + email);
             
             if(User.isNewUser(email) != null) {
                 return "User already exists";

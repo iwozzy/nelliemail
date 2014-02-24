@@ -33,8 +33,9 @@ public class Application extends Controller {
     
 
     public static Result authenticate() {
+        System.out.println("here");
         Form<Login> loginForm = form(Login.class).bindFromRequest();
-        
+
         if(loginForm.hasErrors()) {
             return badRequest(index.render(loginForm));
         } else {
@@ -54,25 +55,28 @@ public class Application extends Controller {
             return redirect(routes.Application.index());
         }
     }
-    
-    
+
+    /*
+        This hands sometimes: CLEAN and COMPILE in the playframework console
+     */
     public static class Login {
         public String email;
         public String password;
-        
-        
+
+
         public String validate() {
-            
+
             System.out.println("First: " + email);
-            
+            System.out.println("Password: " + password);
+
             if (User.authenticate(email, password) == null) {
                 return "Invalid user or password";
             }
-            
+
             return null;
         }
     }
-    
+
 }
 
 

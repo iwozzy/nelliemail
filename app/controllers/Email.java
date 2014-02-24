@@ -19,6 +19,8 @@ import javax.mail.Message;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Map;
+import java.util.Date;
 
 import views.html.*;
 
@@ -31,22 +33,35 @@ public class Email extends Controller {
         Returns the Gmail inbox folder for the currently logged in user
      */
 
-    public static Folder getInbox() {
+    public static Folder getFolder(String name, boolean readWrite) {
         OAuth2Authenticator.initialize();
 
         User currentUser = User.isNewUser(session("email"));
 
-        try {
-            IMAPStore imapSslStore = OAuth2Authenticator.connectToImap("imap.gmail.com", 993, currentUser.email, currentUser.googleToken, true);
-            Folder inbox = imapSslStore.getFolder("inbox");
-            inbox.open(Folder.READ_ONLY);
+        long timestamp = new Date().getTime();
 
-            System.out.println("---------------------" + inbox.getMessageCount() + "-----------------------");
-            System.out.println("---------------------" + inbox.getMessage(1368).isSet(FLAGS.Flag.SEEN) + "-----------------------");
+        if((timestamp - currentUser.getTokenTime()) > 3000000) {
+            System.out.println("-----Refreshing the token!-----");
+            currentUser.refreshToken();
+        }
+
+        try {
+
+            IMAPStore imapSslStore = OAuth2Authenticator.connectToImap("imap.gmail.com", 993, currentUser.email, currentUser.googleToken, true);
+            Folder inbox = imapSslStore.getFolder(name);
+
+            if (readWrite) {
+                inbox.open(Folder.READ_WRITE);
+            } else {
+                inbox.open(Folder.READ_ONLY);
+            }
 
             return inbox;
+
         } catch (Exception e) {
+
             System.out.println(e);
+
         }
 
         return null;
@@ -54,24 +69,22 @@ public class Email extends Controller {
 
 
     /*
+        Gets the 5 unread emails from the inbox
         TODO Need to return actual JSON vs ArrayLit
      */
 
     @BodyParser.Of(BodyParser.Json.class)
-    public static Result getCover() {
-        User currentUser = User.isNewUser(session("email"));
-        OAuth2Authenticator.initialize();
-        ObjectNode result = Json.newObject();
+    public static Result getCoverEmails() {
 
         ArrayList<Message> coverEmails = new ArrayList<Message>();
 
-        Folder inbox = getInbox();
+        Folder inbox = getFolder("inbox", false);
 
         try {
-            inbox.open(Folder.READ_ONLY);
             int messageCount = inbox.getMessageCount();
 
             //BE CAREFUL WITH i>=1
+            //I think the first message is the last i.e. message count
             for(int i = messageCount; i >= 1 ; i--) {
                 Message message = inbox.getMessage(i);
                 if(!message.isSet(FLAGS.Flag.SEEN)) {
@@ -83,11 +96,6 @@ public class Email extends Controller {
                 }
             }
 
-            result.put("status","OK");
-
-            for(Message m : coverEmails) {
-                result.put("message"+m.getMessageNumber(),m.getSubject());
-            }
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -96,21 +104,21 @@ public class Email extends Controller {
 
     }
 
+    /*
+        Gets all of the messages in the user's outbox.
+        It then processes the messages to try to return the ones that haven't been replied to
+     */
+
     public static Result getOutbox() {
-        User currentUser = User.isNewUser(session("email"));
-        OAuth2Authenticator.initialize();
 
         ArrayList<Message> sentMessagesPrimary = new ArrayList<Message>();
         ArrayList<Message> receivedMessagesInReplyTo = new ArrayList<Message>();
         ArrayList<Message> followUp = new ArrayList<Message>();
 
-        try {
-            IMAPStore imapSslStore = OAuth2Authenticator.connectToImap("imap.gmail.com",993,currentUser.email,currentUser.googleToken,true);
-            Folder outbox = imapSslStore.getFolder("[Gmail]/Sent Mail");
-            Folder inbox = imapSslStore.getFolder("inbox");
+        Folder outbox = getFolder("[Gmail]/Sent Mail", false);
+        Folder inbox = getFolder("inbox", false);
 
-            outbox.open(Folder.READ_ONLY);
-            inbox.open(Folder.READ_ONLY);
+        try {
 
             int messageCount = outbox.getMessageCount();
             int inboxCount = inbox.getMessageCount();
@@ -196,6 +204,47 @@ public class Email extends Controller {
         return ok(cover.render(followUp));
     }
 
+//    public static void deleteMessage(Message message) {
+//        try {
+//            message.setFlag(Flags.Flag.DELETED, true);
+//        } catch (Exception e) {
+//            System.out.println(e);
+//        }
+//    }
+
+    /*
+        In Gmail you have to move the messages to [Gmail]/Trash
+        Called via AJAX with a parameter of message ID in the inbox
+
+        TODO The message ID will change if messages are not deleted in the correct order....!!!!
+     */
+
+    public static Result deleteMessage () {
+
+        String message = request().getQueryString("foo");
+        System.out.println(message);
+        int intMessage = Integer.parseInt(message);
+
+        System.out.println("Getting ready to delete message number:" + intMessage);
+
+        Folder inbox = getFolder("inbox", true);
+        Folder trash = getFolder("[Gmail]/Trash", false);
+
+        try {
+            Message messageArray[] = new Message[1];
+            Message messageToDelete = inbox.getMessage(intMessage);
+            messageArray[0] = messageToDelete;
+
+            inbox.copyMessages(messageArray,trash);
+            //messageToDelete.setFlag(Flags.Flag.DELETED, true);
+            inbox.close(true);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+
+        return ok();
+    }
     /*
         Example of a nested json
      */
@@ -215,4 +264,5 @@ public class Email extends Controller {
 
         return ok(result);
     }
+
 }

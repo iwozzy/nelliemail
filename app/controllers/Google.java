@@ -25,6 +25,7 @@ public class Google extends Controller {
     private static String oauth3 = "https://accounts.google.com/o/oauth2/token";
     private static String client_secret = "&client_secret=_2eb28Gm6rbKAsMKYaKS25Dy";
     private static String grant_type = "&grant_type=authorization_code";
+    private static String grant_type_refresh = "&grant_type=refresh_token";
     
     private static String userinfo = "https://www.googleapis.com/oauth2/v2/userinfo";
 
@@ -76,5 +77,16 @@ public class Google extends Controller {
         System.out.println("Hit me!");
         
         return ok();
+    }
+
+    public static String refreshToken(String refreshToken) {
+        String refresh = "&refresh_token=" + refreshToken;
+        Promise<WS.Response> result = WS.url(oauth3).setContentType("application/x-www-form-urlencoded").post(client_secret+grant_type_refresh+refresh+client_id);
+        WS.Response response = result.get();
+        JsonNode json = response.asJson();
+
+        String access_token = json.get("access_token").asText();
+
+        return access_token;
     }
 }

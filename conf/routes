@@ -1,7 +1,6 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
-
 GET     /                           controllers.Application.index()
 
 # Map static resources from the /public folder to the /assets URL path
@@ -19,7 +18,7 @@ GET     /logout                     controllers.Application.logOut()
 GET     /googleauth                 controllers.Google.auth()
 GET     /googleauth2                controllers.Google.auth2(code)
 
-GET     /emails                     controllers.Email.getFolders()
 GET     /sayHello                   controllers.Email.sayHello()
-GET     /cover                      controllers.Email.getCover()
+GET     /cover                      controllers.Email.getCoverEmails()
 GET     /outbox                     controllers.Email.getOutbox()
+GET     /delete                     controllers.Email.deleteMessage()
