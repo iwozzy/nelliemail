@@ -16,14 +16,14 @@ public class Google extends Controller {
     
     private static String oauth2 = "https://accounts.google.com/o/oauth2/auth?";
     private static String response_type = "response_type=code";
-    private static String client_id = "&client_id=909061507773-dv7c1dsk7n1cs9q368l7t5u8bqnk1u3s.apps.googleusercontent.com";
+    private static String client_id = "&client_id=";
     private static String redirect_uri = "&redirect_uri=http://localhost:9000/googleauth2";
     private static String scope = "&scope=https://mail.google.com/+email";//"&scope=email";
     private static String approval_prompt = "&approval_prompt=force";
     private static String access_type = "&access_type=offline";
     
     private static String oauth3 = "https://accounts.google.com/o/oauth2/token";
-    private static String client_secret = "&client_secret=_2eb28Gm6rbKAsMKYaKS25Dy";
+    private static String client_secret = "&client_secret=";
     private static String grant_type = "&grant_type=authorization_code";
     private static String grant_type_refresh = "&grant_type=refresh_token";
     
