@@ -36,8 +36,8 @@ import models.User;
 
 public class Evernote extends Controller {
     
-    private static final String CONSUMER_KEY = "wozniakpaull";
-    private static final String CONSUMER_SECRET = "2ba3b471676c85b2";
+    private static final String CONSUMER_KEY = "";
+    private static final String CONSUMER_SECRET = "";
     
     private static final String CALLBACK_URL = "http://localhost:9000/auth2";
     private static final String USER_STORE_URL = "https://sandbox.evernote.com/edam/user";
